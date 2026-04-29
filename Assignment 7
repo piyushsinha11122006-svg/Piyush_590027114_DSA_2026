@@ -1,0 +1,255 @@
+#include <stdio.h>
+#define SIZE 10
+#define MAX 20
+
+// ---------------- HASH TABLE ----------------
+int table[SIZE];
+
+// Hash function
+int hashFunction(int key) {
+    return (key % 1000) % SIZE;
+}
+
+// Insert with linear probing
+void insert(int key) {
+    int index = hashFunction(key);
+
+    while (table[index] != -1) {
+        index = (index + 1) % SIZE;
+    }
+
+    table[index] = key;
+    printf("Inserted at index %d\n", index);
+}
+
+// Search
+void search(int key) {
+    int index = hashFunction(key);
+    int start = index;
+
+    while (table[index] != -1) {
+        if (table[index] == key) {
+            printf("Found at index %d\n", index);
+            return;
+        }
+        index = (index + 1) % SIZE;
+        if (index == start) break;
+    }
+    printf("Not Found\n");
+}
+
+// Delete
+void deleteKey(int key) {
+    int index = hashFunction(key);
+    int start = index;
+
+    while (table[index] != -1) {
+        if (table[index] == key) {
+            table[index] = -1;
+            printf("Deleted successfully\n");
+            return;
+        }
+        index = (index + 1) % SIZE;
+        if (index == start) break;
+    }
+    printf("Key not found\n");
+}
+
+// Display hash table
+void displayHash() {
+    for (int i = 0; i < SIZE; i++) {
+        if (table[i] == -1)
+            printf("%d -> Empty\n", i);
+        else
+            printf("%d -> %d\n", i, table[i]);
+    }
+}
+
+// ---------------- GRAPH ----------------
+int adj[MAX][MAX], visited[MAX], queue[MAX];
+int n;
+
+// Input graph
+void inputGraph() {
+    printf("Enter number of vertices: ");
+    scanf("%d", &n);
+
+    printf("Enter adjacency matrix:\n");
+    for (int i = 0; i < n; i++)
+        for (int j = 0; j < n; j++)
+            scanf("%d", &adj[i][j]);
+}
+
+// Display matrix
+void displayMatrix() {
+    printf("Adjacency Matrix:\n");
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n; j++)
+            printf("%d ", adj[i][j]);
+        printf("\n");
+    }
+}
+
+// In-degree & Out-degree
+void degree(int v) {
+    int indeg = 0, outdeg = 0;
+
+    for (int i = 0; i < n; i++) {
+        outdeg += adj[v][i];
+        indeg += adj[i][v];
+    }
+
+    printf("In-degree: %d\n", indeg);
+    printf("Out-degree: %d\n", outdeg);
+}
+
+// Check undirected
+void checkUndirected() {
+    int flag = 1;
+
+    for (int i = 0; i < n && flag; i++) {
+        for (int j = 0; j < n; j++) {
+            if (adj[i][j] != adj[j][i]) {
+                flag = 0;
+                break;
+            }
+        }
+    }
+
+    if (flag)
+        printf("Graph is Undirected\n");
+    else
+        printf("Graph is Directed\n");
+}
+
+// ---------------- BFS ----------------
+void BFS(int start) {
+    int front = 0, rear = 0;
+
+    for (int i = 0; i < n; i++)
+        visited[i] = 0;
+
+    queue[rear++] = start;
+    visited[start] = 1;
+
+    printf("BFS Traversal: ");
+
+    while (front < rear) {
+        int v = queue[front++];
+        printf("%d ", v);
+
+        for (int i = 0; i < n; i++) {
+            if (adj[v][i] == 1 && visited[i] == 0) {
+                queue[rear++] = i;
+                visited[i] = 1;
+            }
+        }
+    }
+    printf("\n");
+}
+
+// ---------------- DFS ----------------
+void DFS(int v) {
+    printf("%d ", v);
+    visited[v] = 1;
+
+    for (int i = 0; i < n; i++) {
+        if (adj[v][i] == 1 && visited[i] == 0)
+            DFS(i);
+    }
+}
+
+// ---------------- MAIN ----------------
+int main() {
+    int choice, key, v, start;
+
+    // Initialize hash table
+    for (int i = 0; i < SIZE; i++)
+        table[i] = -1;
+
+    do {
+        printf("\n===== MENU =====\n");
+        printf("1. Hash Function (SAP-ID)\n");
+        printf("2. Insert in Hash Table\n");
+        printf("3. Delete from Hash Table\n");
+        printf("4. Search in Hash Table\n");
+        printf("5. Display Hash Table\n");
+        printf("6. Input Graph\n");
+        printf("7. Display Adjacency Matrix\n");
+        printf("8. In-degree & Out-degree\n");
+        printf("9. Check Undirected Graph\n");
+        printf("10. BFS Traversal\n");
+        printf("11. DFS Traversal\n");
+        printf("0. Exit\n");
+
+        printf("Enter choice: ");
+        scanf("%d", &choice);
+
+        switch (choice) {
+
+        case 1:
+            printf("Enter SAP ID: ");
+            scanf("%d", &key);
+            printf("Family: %d\n", hashFunction(key));
+            break;
+
+        case 2:
+            printf("Enter key: ");
+            scanf("%d", &key);
+            insert(key);
+            break;
+
+        case 3:
+            printf("Enter key: ");
+            scanf("%d", &key);
+            deleteKey(key);
+            break;
+
+        case 4:
+            printf("Enter key: ");
+            scanf("%d", &key);
+            search(key);
+            break;
+
+        case 5:
+            displayHash();
+            break;
+
+        case 6:
+            inputGraph();
+            break;
+
+        case 7:
+            displayMatrix();
+            break;
+
+        case 8:
+            printf("Enter vertex: ");
+            scanf("%d", &v);
+            degree(v);
+            break;
+
+        case 9:
+            checkUndirected();
+            break;
+
+        case 10:
+            printf("Enter start vertex: ");
+            scanf("%d", &start);
+            BFS(start);
+            break;
+
+        case 11:
+            for (int i = 0; i < n; i++) visited[i] = 0;
+            printf("Enter start vertex: ");
+            scanf("%d", &start);
+            printf("DFS Traversal: ");
+            DFS(start);
+            printf("\n");
+            break;
+        }
+
+    } while (choice != 0);
+
+    return 0;
+}
